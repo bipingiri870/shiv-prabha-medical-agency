@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Counter - Shiv Prabha Medical Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header with Store Name -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <h1 class="text-3xl font-bold text-center text-blue-600">Shiv Prabha Medical Agency</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <!-- Tab Navigation -->
+        <div class="mb-4 border-b border-gray-200">
+            <nav class="flex space-x-4" aria-label="Tabs">
+                <button id="billing-tab" class="px-3 py-2 font-medium text-lg rounded-t-md text-blue-600 border-b-2 border-blue-600">Billing</button>
+                <button id="history-tab" class="px-3 py-2 font-medium text-lg rounded-t-md text-gray-500 hover:text-gray-700">History</button>
+            </nav>
+        </div>
+
+        <!-- Billing View -->
+        <div id="billing-view">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Billing Section -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">Billing Counter</h2>
+                    
+                    <div class="mb-4 relative">
+                        <label for="search-input" class="block text-sm font-medium text-gray-700">Search Product by Name</label>
+                        <input type="text" id="search-input" placeholder="Type to search for a product..." class="mt-1 block w-full p-3 border rounded-md text-lg">
+                        <div id="search-results" class="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="barcode-input" class="block text-sm font-medium text-gray-700">Scan Barcode</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="text" id="barcode-input" placeholder="Click Scan then use scanner..." class="block w-full p-3 border rounded-md text-lg">
+                            <button type="button" id="scan-barcode-btn-counter" class="bg-blue-500 hover:bg-blue-600 text-white font-bold p-3 rounded-lg" title="Ready scanner input">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m-4-16v16m8-16v16M3 8h18M3 16h18" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billing-list" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Total & Actions Section -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md self-start">
+                    <h2 class="text-xl font-bold mb-4">Total Bill</h2>
+                    <div class="space-y-2 text-2xl font-bold">
+                        <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal">₹0.00</span></div>
+                        <div class="flex justify-between text-blue-600 border-t pt-2"><span>Grand Total:</span><span id="grand-total">₹0.00</span></div>
+                    </div>
+                    <div class="mt-6 space-y-3">
+                        <button id="finalize-bill-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg text-lg">Finalize & Print</button>
+                        <button id="export-tally-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg text-lg">Export for Tally</button>
+                        <button id="new-bill-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg text-lg">New Bill</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div id="history-view" class="hidden">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Sales History</h2>
+                    <button id="export-history-tally-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg">Export History for Tally</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="counter.js" type="module"></script>
+</body>
+</html>

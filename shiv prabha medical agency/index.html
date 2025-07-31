@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiv Prabha Medical Agency</title>
+    
+    <!-- Link to Tailwind CSS framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Link to your custom CSS file -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;
+700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">Shiv Prabha Medical Agency</h1>
+            <!-- The "Add Medicine" button has been removed from this section -->
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Products Section -->
+        <section class="lg:col-span-2">
+            <div class="mb-6">
+                <input type="text" id="search-bar" placeholder="Search for medicines..." class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Available Medicines</h2>
+            <div id="medicine-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Medicine items will be dynamically inserted by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Order Section -->
+        <aside class="bg-white p-6 rounded-lg shadow-md self-start sticky top-24">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Your Order</h2>
+            <div id="cart-items" class="mb-4 max-h-60 overflow-y-auto">
+                <p class="text-gray-500">Your cart is empty.</p>
+            </div>
+            <div class="border-t pt-4">
+                <p class="text-lg font-bold flex justify-between">Total: <span id="total-price">₹0.00</span></p>
+            </div>
+            <form id="customer-details-form" class="mt-6">
+                 <h3 class="text-lg font-semibold mb-3 text-gray-700">Customer Details</h3>
+                 <input type="text" id="customer-name" placeholder="Full Name" class="w-full p-2 mb-3 border rounded-md" required>
+                 <input type="tel" id="customer-phone" placeholder="Phone Number" class="w-full p-2 mb-3 border rounded-md" required>
+                 <input type="email" id="customer-email" placeholder="Email Address" class="w-full p-2 mb-3 border rounded-md" required>
+                 <textarea id="customer-address" placeholder="Full Address" class="w-full p-2 mb-3 border rounded-md" rows="3" required></textarea>
+                 <button id="place-order-btn" type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Place Order</button>
+            </form>
+        </aside>
+    </main>
+    
+    <!-- Product Detail Modal -->
+    <div id="product-detail-modal" class="modal">
+        <div id="product-detail-content" class="modal-content">
+             <!-- Details will be injected by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <p id="alert-message" class="text-center text-lg mb-4"></p>
+            <div class="flex justify-center">
+                <button id="alert-ok-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to your JavaScript file -->
+    <script src="script.js" type="module"></script>
+</body>
+</html>
