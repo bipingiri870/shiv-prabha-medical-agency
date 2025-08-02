@@ -26,11 +26,9 @@ try {
 // --- Auth Protection for Counter ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // If user is logged in, load the counter application
         console.log("Admin authenticated. Loading counter...");
         preloadMedicines();
     } else {
-        // If no user is logged in, redirect to the admin login page
         console.log("No user logged in. Redirecting to admin login.");
         window.location.href = 'admin.html';
     }
@@ -102,13 +100,18 @@ barcodeInput.addEventListener('keypress', (e) => {
 scanBtnCounter.addEventListener('click', () => barcodeInput.focus());
 
 searchInput.addEventListener('input', () => {
+    console.log("Search input detected.");
     const searchTerm = searchInput.value.trim().toLowerCase();
     if (searchTerm.length < 2) {
         searchResults.innerHTML = '';
         searchResults.classList.add('hidden');
         return;
     }
-    const matchingProducts = allMedicines.filter(med => med.name.toLowerCase().includes(searchTerm));
+    const matchingProducts = allMedicines.filter(med => 
+        med.name.toLowerCase().includes(searchTerm) ||
+        (med.description && med.description.toLowerCase().includes(searchTerm))
+    );
+    console.log(`Found ${matchingProducts.length} products for term: "${searchTerm}"`);
     renderSearchResults(matchingProducts);
 });
 
@@ -120,7 +123,7 @@ function renderSearchResults(products) {
     }
     products.forEach(product => {
         const resultEl = document.createElement('div');
-        resultEl.className = 'p-3 hover:bg-gray-100 cursor-pointer';
+        resultEl.className = 'search-result-item p-3 hover:bg-gray-100 cursor-pointer';
         resultEl.textContent = `${product.name} (Stock: ${product.stock})`;
         resultEl.dataset.id = product.id;
         searchResults.appendChild(resultEl);
@@ -129,13 +132,22 @@ function renderSearchResults(products) {
 }
 
 searchResults.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.dataset.id) {
+    console.log("Search result clicked.");
+    const target = e.target.closest('.search-result-item');
+    if (target && target.dataset.id) {
         findAndAddItem(target.dataset.id, 'id');
         searchInput.value = '';
         searchResults.classList.add('hidden');
     }
 });
+
+// Hide search results when clicking anywhere else on the page
+document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+    }
+});
+
 
 function findAndAddItem(value, type) {
     let product;
@@ -385,7 +397,7 @@ function exportToTally(bill, isCurrentBill) {
             sale.items.forEach(item => {
                 const row = [
                     saleDate, "Sales", voucherNo, `"${item.name}"`,
-                    item.quantity, item.price.toFixed(2), (item.price * item.quantity).toFixed(2)
+                    item.quantity, item.price.toFixed(2), (item.price * item.g_quantity).toFixed(2)
                 ].join(',');
                 csvContent += row + "\n";
             });
