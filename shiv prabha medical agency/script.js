@@ -316,4 +316,3 @@ window.onclick = function(event) {
         closeProductDetailModal();
     }
 }
-
