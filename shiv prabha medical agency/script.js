@@ -4,7 +4,6 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gsta
 import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 // --- Firebase Configuration ---
-// This should be the same config as your admin.js
 const firebaseConfig = {
   apiKey: "AIzaSyDPqm6RClAajj5pwwZyu93qGHCWjCj1wgo",
   authDomain: "shiv-prabha-medical-agency.firebaseapp.com",
@@ -47,7 +46,6 @@ let medicines = [];
 let cart = [];
 const ownerWhatsApp = "919942523385"; // Your WhatsApp number
 let unsubscribeMedicines = null; 
-let expiryAlertSent = false;
 
 // --- DOM Elements ---
 const medicineListEl = document.getElementById('medicine-list');
@@ -102,7 +100,10 @@ function loadMedicines() {
 function renderMedicines() {
     if (!medicineListEl || !searchBar) return;
     const searchTerm = searchBar.value.toLowerCase();
-    const filteredMedicines = medicines.filter(med => med.name.toLowerCase().includes(searchTerm));
+    const filteredMedicines = medicines.filter(med => 
+        med.name.toLowerCase().includes(searchTerm) ||
+        (med.description && med.description.toLowerCase().includes(searchTerm))
+    );
 
     medicineListEl.innerHTML = '';
     if (filteredMedicines.length === 0) {
@@ -167,10 +168,7 @@ function updateCart() {
                 <img src="${item.imageUrl || 'https://placehold.co/40x40'}" class="w-10 h-10 object-cover rounded">
                 <div>
                     <p class="font-semibold">${item.name}</p>
-                    <div class="flex items-center text-sm text-gray-500">
-                        ₹${item.price.toFixed(2)} x 
-                        <input type="number" value="${item.quantity}" min="1" max="${item.stock}" data-id="${item.id}" class="quantity-input w-16 text-center border rounded ml-2">
-                    </div>
+                    <p class="text-sm text-gray-500">₹${item.price.toFixed(2)} x ${item.quantity}</p>
                 </div>
             </div>
             <button data-id="${item.id}" class="remove-from-cart-btn text-red-500 hover:text-red-700 font-bold p-1">X</button>
@@ -180,27 +178,6 @@ function updateCart() {
     });
     totalPriceEl.textContent = `₹${totalPrice.toFixed(2)}`;
 }
-
-function handleQuantityChange(medicineId, newQuantity) {
-    const cartItem = cart.find(item => item.id === medicineId);
-    if (!cartItem) return;
-
-    const quantity = parseInt(newQuantity);
-    
-    if (isNaN(quantity) || quantity < 1) {
-        // If invalid, revert to 1
-        cartItem.quantity = 1;
-    } else if (quantity > cartItem.stock) {
-        // If more than stock, set to max stock
-        customAlert(`Only ${cartItem.stock} of ${cartItem.name} available.`);
-        cartItem.quantity = cartItem.stock;
-    } else {
-        cartItem.quantity = quantity;
-    }
-    
-    updateCart();
-}
-
 
 function removeFromCart(medicineId) {
     cart = cart.filter(item => item.id !== medicineId);
@@ -241,12 +218,16 @@ async function placeOrder(event) {
 
     try {
         await batch.commit();
-        const ownerMessage = `*New Order Received!*\n\n${billText}`;
+        let ownerMessage = `*New Order Received!*\n\n${billText}`;
         const customerMessage = `Hi ${name}, your order from Shiv Prabha Medical Agency has been confirmed.\n\n${billText}`;
+        
+        // **FIX:** Combine stock alert with the owner's order message
         if (stockAlerts.length > 0) {
-            const stockAlertMessage = `*Stock Alert!*\n${stockAlerts.join('\n')}`;
-            window.open(`https://wa.me/${ownerWhatsApp}?text=${encodeURIComponent(stockAlertMessage)}`, '_blank');
+            const stockAlertMessage = `\n\n*--- STOCK ALERT ---*\n${stockAlerts.join('\n')}`;
+            ownerMessage += stockAlertMessage;
         }
+
+        // Now, only open two windows, which is more reliable
         window.open(`https://wa.me/${ownerWhatsApp}?text=${encodeURIComponent(ownerMessage)}`, '_blank');
         window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(customerMessage)}`, '_blank');
         
@@ -314,12 +295,6 @@ if(cartItemsEl) {
             removeFromCart(removeBtn.dataset.id);
         }
     });
-
-    cartItemsEl.addEventListener('change', (e) => {
-        if (e.target.classList.contains('quantity-input')) {
-            handleQuantityChange(e.target.dataset.id, e.target.value);
-        }
-    });
 }
 
 if (productDetailModal) {
@@ -341,3 +316,4 @@ window.onclick = function(event) {
         closeProductDetailModal();
     }
 }
+
